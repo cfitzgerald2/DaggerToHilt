@@ -1,24 +1,25 @@
 package com.fitz.hiltdemo.di.component
 
-import com.fitz.hiltdemo.di.module.*
-import com.fitz.hiltdemo.presentation.view.fragment.FirstFragment
-import com.fitz.hiltdemo.presentation.view.activity.ListActivity
-import com.fitz.hiltdemo.presentation.view.fragment.SecondFragment
+import android.app.Application
+import com.fitz.hiltdemo.di.module.AppModule
+import com.fitz.movie.di.component.MovieComponent
+import dagger.BindsInstance
 import dagger.Component
 
-@Component(modules = [
-    AppModule::class,
-    ViewModelModule::class,
-    ViewModelFactoryModule::class,
-    DispatcherModule::class,
-    DataModule::class,
-    RepositoryModule::class
-])
+@Component(
+    modules = [AppModule::class]
+)
 interface AppComponent {
 
-    fun inject(activity: ListActivity)
+    fun provideMovieComponentFactory(): MovieComponent.Factory
 
-    fun inject(firstFragment: FirstFragment)
+    @Component.Builder
+    interface Builder {
+        @BindsInstance
+        fun application(application: Application): Builder
 
-    fun inject(firstFragment: SecondFragment)
+        fun appModule(appModule: AppModule): Builder
+
+        fun build(): AppComponent
+    }
 }

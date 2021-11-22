@@ -19,8 +19,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-
-
     buildTypes {
 
         release {
@@ -45,6 +43,8 @@ android {
 }
 
 dependencies {
+
+    implementation project(path: ':movie')
 
     // hilt dependencies
 //    implementation "com.google.dagger:hilt-android:$hilt_version"

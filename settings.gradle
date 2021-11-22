@@ -8,3 +8,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Hilt Demo"
 include ':app'
+include ':movie'
