@@ -9,31 +9,29 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fitz.movie.R
 import com.fitz.movie.databinding.FragmentFirstBinding
-import com.fitz.movie.di.MovieComponentProvider
+import com.fitz.movie.presentation.RefreshHandler
 import com.fitz.movie.presentation.view.adapter.MoviesListAdapter
 import com.fitz.movie.presentation.viewmodel.FirstFragmentViewModel
-import com.fitz.movie.presentation.viewmodel.ViewModelProviderFactory
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FirstFragment : Fragment() {
+@AndroidEntryPoint
+class FirstFragment : Fragment(), RefreshHandler {
 
-    @Inject lateinit var viewModelFactory: ViewModelProviderFactory
-    private val viewModel: FirstFragmentViewModel by viewModels { viewModelFactory }
+    private val viewModel: FirstFragmentViewModel by viewModels()
+
+    @Inject
+    lateinit var moviesListAdapter: MoviesListAdapter
 
     private var _binding: FragmentFirstBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (context.applicationContext as MovieComponentProvider).movieComponent.inject(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +52,7 @@ class FirstFragment : Fragment() {
             }
         }
 
-        val moviesListAdapter = MoviesListAdapter(mutableListOf(), findNavController(), viewModel)
+//        val moviesListAdapter = MoviesListAdapter(mutableListOf(), findNavController(), viewModel)
         binding.moviesList.adapter = moviesListAdapter
 
         viewModel.moviesListLiveData.observe(viewLifecycleOwner) {
@@ -114,6 +112,10 @@ class FirstFragment : Fragment() {
                 }
             }
         )
+    }
+
+    override fun requestMoreData() {
+        viewModel.requestMoreData()
     }
 
     override fun onDestroyView() {

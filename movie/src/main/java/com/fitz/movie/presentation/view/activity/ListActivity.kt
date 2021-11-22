@@ -9,8 +9,9 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.fitz.movie.R
 import com.fitz.movie.databinding.ActivityListBinding
-import com.fitz.movie.di.MovieComponentProvider
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ListActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -18,8 +19,6 @@ class ListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        (application as MovieComponentProvider).movieComponent.inject(this)
 
         binding = ActivityListBinding.inflate(layoutInflater)
         setContentView(binding.root)

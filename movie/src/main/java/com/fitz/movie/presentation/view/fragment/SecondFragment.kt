@@ -15,21 +15,19 @@ import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.fitz.movie.R
 import com.fitz.movie.databinding.FragmentSecondBinding
-import com.fitz.movie.di.MovieComponentProvider
 import com.fitz.movie.presentation.viewmodel.SecondFragmentViewModel
-import com.fitz.movie.presentation.viewmodel.ViewModelProviderFactory
+import com.fitz.movie.usecase.model.MovieViewItem
 import com.fitz.movie.usecase.model.MovieViewItem.Companion.SELECTED_MOVIE_ITEM
+import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
-import javax.inject.Inject
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
+@AndroidEntryPoint
 class SecondFragment : Fragment() {
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelProviderFactory
-    private val viewModel: SecondFragmentViewModel by viewModels { viewModelFactory }
+    private val viewModel: SecondFragmentViewModel by viewModels()
 
     private var _binding: FragmentSecondBinding? = null
 
@@ -38,12 +36,7 @@ class SecondFragment : Fragment() {
     private val binding get() = _binding!!
 
     // item being displayed on screen
-    private lateinit var movieViewItem: com.fitz.movie.usecase.model.MovieViewItem
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (context.applicationContext as MovieComponentProvider).movieComponent.inject(this)
-    }
+    private lateinit var movieViewItem: MovieViewItem
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,7 +49,7 @@ class SecondFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        movieViewItem = requireArguments().get(SELECTED_MOVIE_ITEM) as com.fitz.movie.usecase.model.MovieViewItem
+        movieViewItem = requireArguments().get(SELECTED_MOVIE_ITEM) as MovieViewItem
 
         (requireActivity() as AppCompatActivity).supportActionBar?.title = movieViewItem.title
 

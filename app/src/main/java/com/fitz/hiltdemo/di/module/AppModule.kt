@@ -1,25 +1,22 @@
 package com.fitz.hiltdemo.di.module
 
 import android.content.Context
-import com.fitz.hiltdemo.app.DemoApplication
-import com.fitz.movie.di.component.MovieComponent
-import com.fitz.movie.di.module.*
 import com.fitz.movie.persistence.db.MovieDatabase
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 
-@Module(
-    subcomponents = [
-        MovieComponent::class
-    ]
-)
-class AppModule(private val application: DemoApplication) {
-
-    @Provides
-    fun provideApplication(): Context = application
+@Module
+@InstallIn(SingletonComponent::class)
+class AppModule{
 
     @Provides
-    fun provideDatabase() : MovieDatabase {
-        return MovieDatabase.getDatabase(application)
+    fun provideApplication(@ApplicationContext context: Context): Context = context
+
+    @Provides
+    fun provideDatabase(context: Context) : MovieDatabase {
+        return MovieDatabase.getDatabase(context)
     }
 }
