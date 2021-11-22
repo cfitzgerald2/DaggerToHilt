@@ -1,24 +1,27 @@
 package com.fitz.hiltdemo.service
 
-import com.fitz.hiltdemo.service.model.MovieResponse
+import com.fitz.hiltdemo.BuildConfig
 import okhttp3.OkHttpClient
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import timber.log.Timber
 
-object MovieServiceImpl {
+/**
+ * object to hold retrofit instance and service implementations
+ *
+ * adds the api_key to each call
+ */
+object ServiceImplementations {
 
     private val client: OkHttpClient by lazy {
         OkHttpClient.Builder().addInterceptor {
             val originalRequest = it.request()
             val newUrl = originalRequest.url().newBuilder().addQueryParameter(
                 "api_key",
-                "TODO"
+                BuildConfig.movieDBApiKey
             ).build()
             val newRequest = originalRequest.newBuilder().url(newUrl).build()
-            println(newRequest.url())
-            println(newRequest.body())
-            println(newRequest.headers())
+            Timber.d("requestURL: ${newRequest.url()}")
             it.proceed(newRequest)
         }.build()
     }
@@ -29,11 +32,7 @@ object MovieServiceImpl {
             .addConverterFactory(GsonConverterFactory.create()).build()
     }
 
-    private val movieService by lazy {
+    val movieService: MovieService by lazy {
         retrofitInstance.create(MovieService::class.java)
-    }
-
-    suspend fun requestMovies(): Response<MovieResponse> {
-        return movieService.searchMovies()
     }
 }

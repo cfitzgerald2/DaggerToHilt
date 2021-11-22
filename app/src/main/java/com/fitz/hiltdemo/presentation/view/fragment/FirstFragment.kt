@@ -2,22 +2,19 @@ package com.fitz.hiltdemo.presentation.view.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fitz.hiltdemo.R
 import com.fitz.hiltdemo.app.DemoApplication
 import com.fitz.hiltdemo.databinding.FragmentFirstBinding
-import com.fitz.hiltdemo.usecase.model.MovieResult
 import com.fitz.hiltdemo.presentation.view.adapter.MoviesListAdapter
 import com.fitz.hiltdemo.presentation.viewmodel.FirstFragmentViewModel
 import com.fitz.hiltdemo.presentation.viewmodel.ViewModelProviderFactory
 import com.fitz.hiltdemo.usecase.model.RepositoryResult
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_first.*
 import javax.inject.Inject
 
 /**
@@ -50,18 +47,28 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val moviesListAdapter = MoviesListAdapter(mutableListOf(), findNavController())
-        movies_list.adapter = moviesListAdapter
+        setHasOptionsMenu(true)
+
+        viewModel.scrollToTopLiveData.observe(viewLifecycleOwner) { shouldScrollToTop ->
+            if(shouldScrollToTop) {
+                binding.moviesList.scrollToPosition(0)
+            }
+        }
+
+        val moviesListAdapter = MoviesListAdapter(mutableListOf(), findNavController(), viewModel)
+        binding.moviesList.adapter = moviesListAdapter
 
         viewModel.moviesListLiveData.observe(viewLifecycleOwner) {
-            val originalSize = moviesListAdapter.itemCount
-            moviesListAdapter.items = it.list
+            val originalSize = moviesListAdapter.items.size
+            if(moviesListAdapter.items != it.list.toList()) {
+                moviesListAdapter.items = it.list.toList()
+            }
             when (it.dataState) {
                 RepositoryResult.DataOperation.LOADED -> {
-                    moviesListAdapter.notifyItemRangeInserted(0, moviesListAdapter.itemCount - 1)
+                    moviesListAdapter.notifyDataSetChanged()
                 }
                 RepositoryResult.DataOperation.ADDED -> {
-                    moviesListAdapter.notifyItemRangeInserted(originalSize, moviesListAdapter.itemCount - originalSize - 1)
+                    moviesListAdapter.notifyItemRangeInserted(originalSize, moviesListAdapter.itemCount - originalSize)
                 }
                 RepositoryResult.DataOperation.DELETED-> {
                     moviesListAdapter.notifyItemRemoved(it.editedIndex)
@@ -73,10 +80,41 @@ class FirstFragment : Fragment() {
                     moviesListAdapter.notifyItemRangeChanged(0, moviesListAdapter.itemCount - 1)
                 }
                 RepositoryResult.DataOperation.ERROR -> {
-                    Snackbar.make(binding.root, R.string.loading_error_string, Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(binding.root, it.errorMessage, Snackbar.LENGTH_LONG).show()
+                    it.errorMessage = R.string.loading_error_still_present
+                }
+                RepositoryResult.DataOperation.NO_MORE_DATA -> {
+                    Snackbar.make(binding.root, it.errorMessage, Snackbar.LENGTH_LONG).show()
+                    it.errorMessage = R.string.no_more_data_error_still_present
                 }
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.search_menu, menu)
+
+        val searchMenuItem = menu.findItem(R.id.search)
+        val searchView: SearchView = searchMenuItem.actionView as SearchView
+
+        searchView.onActionViewExpanded()
+        searchView.isIconified = false
+        searchView.clearFocus()
+        searchView.setQuery(viewModel.searchString, false)
+
+        searchView.setOnQueryTextListener(
+            object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    viewModel.searchForData(query)
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    viewModel.searchForData(newText)
+                    return true
+                }
+            }
+        )
     }
 
     override fun onDestroyView() {

@@ -1,18 +1,36 @@
 package com.fitz.hiltdemo.presentation.view.fragment
 
+import android.content.Context
+import android.graphics.drawable.AnimatedVectorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.fragment.app.viewModels
+import com.bumptech.glide.Glide
 import com.fitz.hiltdemo.R
+import com.fitz.hiltdemo.app.DemoApplication
 import com.fitz.hiltdemo.databinding.FragmentSecondBinding
+import com.fitz.hiltdemo.presentation.viewmodel.SecondFragmentViewModel
+import com.fitz.hiltdemo.presentation.viewmodel.ViewModelProviderFactory
+import com.fitz.hiltdemo.usecase.model.MovieViewItem
+import com.fitz.hiltdemo.usecase.model.MovieViewItem.Companion.SELECTED_MOVIE_ITEM
+import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
 class SecondFragment : Fragment() {
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProviderFactory
+    private val viewModel: SecondFragmentViewModel by viewModels { viewModelFactory }
 
     private var _binding: FragmentSecondBinding? = null
 
@@ -20,22 +38,82 @@ class SecondFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    // item being displayed on screen
+    private lateinit var movieViewItem: MovieViewItem
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (context.applicationContext as DemoApplication).appComponent.inject(this)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-
+    ): View {
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        movieViewItem = requireArguments().get(SELECTED_MOVIE_ITEM) as MovieViewItem
+
+        (requireActivity() as AppCompatActivity).supportActionBar?.title = movieViewItem.title
+
         binding.buttonSecond.setOnClickListener {
-            findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+            toggleDescriptionVisibility()
         }
+
+        binding.descriptionTextView.movementMethod = ScrollingMovementMethod()
+
+        Glide.with(view).load(movieViewItem.imageURL)
+            .centerCrop()
+            .placeholder(R.drawable.ic_launcher_foreground)
+            .error(R.drawable.ic_launcher_foreground)
+            .into(binding.backgroundImageView)
+
+        getAnimatedDrawableAndStart(movieViewItem.saved)
+
+        binding.bookmarkIcon.setOnClickListener {
+            movieViewItem.saved = !movieViewItem.saved
+            getAnimatedDrawableAndStart(movieViewItem.saved)
+            viewModel.saveMovie(movieViewItem)
+        }
+
+        binding.descriptionTextView.text = movieViewItem.description
+    }
+
+    private fun getAnimatedDrawableAndStart(filled: Boolean) {
+        val drawable = if(filled) {
+            binding.bookmarkIcon.contentDescription = requireContext().getString(R.string.bookmark_saved)
+            AppCompatResources.getDrawable(requireContext(), R.drawable.bookmark_transformation_empty_to_filled)
+        } else {
+            binding.bookmarkIcon.contentDescription = requireContext().getString(R.string.bookmark_unsaved)
+            AppCompatResources.getDrawable(requireContext(), R.drawable.bookmark_transformation_filled_to_empty)
+        }
+
+        binding.bookmarkIcon.background = drawable
+        (drawable as AnimatedVectorDrawable).start()
+    }
+
+    // flips icon upside-down and expands/collapses description text
+    private fun toggleDescriptionVisibility() {
+        val drawable: Drawable? = when (binding.descriptionTextView.visibility) {
+            View.GONE -> {
+                binding.descriptionTextView.visibility = View.VISIBLE
+                AppCompatResources.getDrawable(requireContext(), R.drawable.ic_dropdown_collapsed)
+            }
+            View.VISIBLE -> {
+                binding.descriptionTextView.visibility = View.GONE
+                AppCompatResources.getDrawable(requireContext(), R.drawable.ic_dropdown_expanded)
+            }
+            else -> {
+                throw IllegalArgumentException("This TextView is not in an expected state")
+            }
+        }
+        binding.buttonSecond.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, drawable, null)
+        (drawable as AnimatedVectorDrawable).start()
     }
 
     override fun onDestroyView() {

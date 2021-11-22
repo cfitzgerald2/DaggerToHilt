@@ -11,7 +11,7 @@ import com.fitz.hiltdemo.persistence.model.MovieEntity
 @Database(entities = [MovieEntity::class], version = 1, exportSchema = false)
 abstract class MovieDatabase: RoomDatabase() {
 
-    abstract fun workoutDAO(): MovieDao
+    abstract fun movieDao(): MovieDao
 
     companion object {
 

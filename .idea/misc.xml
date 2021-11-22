@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/drawable/bookmark_transformation.xml" value="0.18645833333333334" />
+        <entry key="app/src/main/res/drawable/bookmark_transformation_empty_to_filled.xml" value="0.24259259259259258" />
+        <entry key="app/src/main/res/drawable/bookmark_transformation_filled_to_empty.xml" value="0.24259259259259258" />
+        <entry key="app/src/main/res/drawable/ic_baseline_bookmark_24.xml" value="0.18645833333333334" />
+        <entry key="app/src/main/res/drawable/ic_baseline_bookmark_border.xml" value="0.18645833333333334" />
+        <entry key="app/src/main/res/drawable/ic_bookmark_animation.xml" value="0.18645833333333334" />
+        <entry key="app/src/main/res/drawable/ic_bookmark_empty.xml" value="0.20520833333333333" />
+        <entry key="app/src/main/res/drawable/ic_bookmark_filled.xml" value="0.20520833333333333" />
+        <entry key="app/src/main/res/drawable/ic_dropdown.xml" value="0.24259259259259258" />
+        <entry key="app/src/main/res/drawable/ic_dropdown_collapsed.xml" value="0.24259259259259258" />
+        <entry key="app/src/main/res/drawable/ic_dropdown_expanded.xml" value="0.24259259259259258" />
+        <entry key="app/src/main/res/layout/activity_list.xml" value="0.165" />
+        <entry key="app/src/main/res/layout/content_list.xml" value="0.1703125" />
+        <entry key="app/src/main/res/layout/fragment_first.xml" value="0.1703125" />
+        <entry key="app/src/main/res/layout/fragment_second.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/movie_list_item.xml" value="0.335" />
+        <entry key="app/src/main/res/menu/search_menu.xml" value="0.335" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

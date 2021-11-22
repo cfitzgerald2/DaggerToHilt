@@ -1,24 +1,25 @@
 package com.fitz.hiltdemo.usecase.databridge
 
+import com.fitz.hiltdemo.repository.MovieRepository
 import com.fitz.hiltdemo.usecase.model.MovieResult
 import com.fitz.hiltdemo.usecase.model.MovieViewItem
-import com.fitz.hiltdemo.usecase.model.RepositoryResult
 import javax.inject.Inject
 
-class MovieDataBridge @Inject constructor(): DataBridge<MovieViewItem> {
+class MovieDataBridge @Inject constructor(private val repository: MovieRepository): DataBridge<MovieViewItem> {
 
-    override fun getData(): MovieResult {
-        return MovieResult(mockList(), RepositoryResult.DataOperation.LOADED)
+    override suspend fun getData(page: Int): MovieResult {
+        return repository.getMovies(page = page)
     }
 
-    private fun mockList() : MutableList<MovieViewItem> {
-        return mutableListOf(
-            MovieViewItem(title = "The Lion King", imageURL = "https://lumiere-a.akamaihd.net/v1/images/p_thelionking_19752_1_0b9de87b.jpeg", movieRating = 9.6),
-            MovieViewItem(title = "The Day the Earth Stood Still", imageURL = "https://flxt.tmsimg.com/assets/p176378_p_v13_ay.jpg", movieRating = 4.0)
-        )
+    override suspend fun editEntity(entity: MovieViewItem) {
+        if(entity.saved) {
+            repository.editMovie(entity)
+        } else {
+            repository.deleteMovie(entity)
+        }
     }
 
-    override fun editEntity(entity: MovieViewItem) {
-        TODO("Not yet implemented")
+    override suspend fun searchData(searchString: String, page: Int): MovieResult {
+        return repository.searchMovies(searchString, page)
     }
 }

@@ -1,0 +1,36 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+  <aapt:attr name="android:drawable">
+    <vector
+        android:name="vector"
+        android:width="24dp"
+        android:height="24dp"
+        android:viewportWidth="24"
+        android:viewportHeight="24">
+      <group
+          android:name="rotationGroup"
+          android:rotation="180"
+          android:pivotX="12"
+          android:pivotY="12">
+        <path
+            android:name="path"
+            android:fillColor="#000000"
+            android:pathData="M7,10l5,5 5,-5z"
+            android:strokeWidth="0.5"
+            android:strokeColor="#FFFFFF" />
+      </group>
+    </vector>
+  </aapt:attr>
+  <target android:name="rotationGroup">
+    <aapt:attr name="android:animation">
+      <set>
+        <objectAnimator
+            android:duration="300"
+            android:interpolator="@android:interpolator/fast_out_slow_in"
+            android:propertyName="rotation"
+            android:valueFrom="180"
+            android:valueTo="0" />
+      </set>
+    </aapt:attr>
+  </target>
+</animated-vector>

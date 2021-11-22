@@ -12,6 +12,7 @@ import java.util.*
 data class MovieEntity(
     @ColumnInfo(name = "title") var title: String,
     @ColumnInfo(name = "image_url") var imageURL: String,
-    @ColumnInfo(name = "rating") var movieRating: Double,
-    @PrimaryKey(autoGenerate = true) var  id: Int? = null
+    @ColumnInfo(name = "description") var description: String,
+    @ColumnInfo(name = "rating") var movieRating: Float,
+    @PrimaryKey var id: Int = 0
 ) : Parcelable
