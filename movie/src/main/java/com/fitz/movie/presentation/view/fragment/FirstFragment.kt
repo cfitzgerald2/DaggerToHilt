@@ -12,6 +12,8 @@ import com.fitz.movie.databinding.FragmentFirstBinding
 import com.fitz.movie.presentation.RefreshHandler
 import com.fitz.movie.presentation.view.adapter.MoviesListAdapter
 import com.fitz.movie.presentation.viewmodel.FirstFragmentViewModel
+import com.fitz.movie.usecase.logger.ActivityLogger
+import com.fitz.movie.usecase.logger.Logger
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -27,6 +29,10 @@ class FirstFragment : Fragment(), RefreshHandler {
     @Inject
     lateinit var moviesListAdapter: MoviesListAdapter
 
+    @Inject
+    @ActivityLogger
+    lateinit var logger: Logger
+
     private var _binding: FragmentFirstBinding? = null
 
     // This property is only valid between onCreateView and
@@ -37,6 +43,7 @@ class FirstFragment : Fragment(), RefreshHandler {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        logger.log("${this::class.java.simpleName} view created")
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -52,7 +59,6 @@ class FirstFragment : Fragment(), RefreshHandler {
             }
         }
 
-//        val moviesListAdapter = MoviesListAdapter(mutableListOf(), findNavController(), viewModel)
         binding.moviesList.adapter = moviesListAdapter
 
         viewModel.moviesListLiveData.observe(viewLifecycleOwner) {

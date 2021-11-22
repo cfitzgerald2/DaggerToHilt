@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fitz.movie.presentation.RefreshHandler
 import com.fitz.movie.usecase.databridge.DataBridge
+import com.fitz.movie.usecase.logger.AppLogger
+import com.fitz.movie.usecase.logger.Logger
 import com.fitz.movie.usecase.model.MovieResult
 import com.fitz.movie.usecase.model.MovieViewItem
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,6 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class FirstFragmentViewModel @Inject constructor(
     private val dataBridge: DataBridge<MovieViewItem>,
+    @AppLogger
+    private val logger: Logger,
     private val backgroundDispatcher: CoroutineScope
 ): ViewModel() {
 
@@ -28,6 +32,7 @@ class FirstFragmentViewModel @Inject constructor(
 
     init {
         requestMoreData()
+        logger.log("${this::class.java.simpleName} initialized")
     }
 
     @Volatile

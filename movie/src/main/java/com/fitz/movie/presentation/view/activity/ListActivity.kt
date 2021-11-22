@@ -9,13 +9,20 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.fitz.movie.R
 import com.fitz.movie.databinding.ActivityListBinding
+import com.fitz.movie.usecase.logger.ActivityLogger
+import com.fitz.movie.usecase.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ListActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityListBinding
+
+    @Inject
+    @ActivityLogger
+    lateinit var logger: Logger
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +36,8 @@ class ListActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
+
+        logger.log("${this::class.java.simpleName} created")
     }
 
     override fun onSupportNavigateUp(): Boolean {

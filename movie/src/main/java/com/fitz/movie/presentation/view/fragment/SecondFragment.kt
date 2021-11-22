@@ -1,6 +1,5 @@
 package com.fitz.movie.presentation.view.fragment
 
-import android.content.Context
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -16,10 +15,13 @@ import com.bumptech.glide.Glide
 import com.fitz.movie.R
 import com.fitz.movie.databinding.FragmentSecondBinding
 import com.fitz.movie.presentation.viewmodel.SecondFragmentViewModel
+import com.fitz.movie.usecase.logger.ActivityLogger
+import com.fitz.movie.usecase.logger.Logger
 import com.fitz.movie.usecase.model.MovieViewItem
 import com.fitz.movie.usecase.model.MovieViewItem.Companion.SELECTED_MOVIE_ITEM
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IllegalArgumentException
+import javax.inject.Inject
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -30,6 +32,10 @@ class SecondFragment : Fragment() {
     private val viewModel: SecondFragmentViewModel by viewModels()
 
     private var _binding: FragmentSecondBinding? = null
+
+    @Inject
+    @ActivityLogger
+    lateinit var logger: Logger
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -42,6 +48,7 @@ class SecondFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        logger.log("${this::class.java.simpleName} view created")
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
         return binding.root
     }
