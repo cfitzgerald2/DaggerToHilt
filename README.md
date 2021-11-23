@@ -9,10 +9,12 @@ This is meant to be a detailed POC of using Hilt in an application with Android 
 
 ### Specific branches
 There are a couple branches in this repo to focus on some of the details of dependency injection. One branch uses Dagger instead of Hilt. You can compare with the base to see how to convert from Dagger to Hilt. This code lab also probide a detailed explanation of migrating to Hilt. https://developer.android.com/codelabs/android-dagger-to-hilt#0
+<br>
 Hilt allows scoping of components to be shared. LoggerExample provides an example of sharing components across multiple classes, and using qualifiers to provide different implementations through Hilt.
 
 ### Getting started
 To run the project yourself, you will need to set up an API key with the Movie Database. Follow the instructions here: https://developers.themoviedb.org/3/getting-started/introduction.
+<br>
 You will need to set up a gradle.properties file in your project root. Your gradle.properties file will look like this: 
 ```# Project-wide Gradle settings.
 # IDE (e.g. Android Studio) users:
