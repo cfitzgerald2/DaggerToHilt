@@ -1,5 +1,6 @@
 package com.fitz.movie.usecase.databridge
 
+import com.fitz.movie.usecase.model.FilterArgument
 import com.fitz.movie.usecase.model.RepositoryResult
 
 interface DataBridge<Entity> {
@@ -8,5 +9,5 @@ interface DataBridge<Entity> {
 
     suspend fun editEntity(entity: Entity)
 
-    suspend fun searchData(searchString: String, page: Int): RepositoryResult<Entity>
+    suspend fun filterData(flags: List<FilterArgument>): RepositoryResult<Entity>
 }

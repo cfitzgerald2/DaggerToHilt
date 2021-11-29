@@ -21,6 +21,7 @@
         <entry key="app/src/main/res/layout/movie_list_item.xml" value="0.335" />
         <entry key="app/src/main/res/menu/search_menu.xml" value="0.335" />
         <entry key="movie/src/main/res/drawable/ic_search.xml" value="0.1609375" />
+        <entry key="movie/src/main/res/layout/fragment_first.xml" value="0.15273556231003038" />
         <entry key="movie/src/main/res/layout/movie_list_item.xml" value="0.14479166666666668" />
         <entry key="movie/src/main/res/menu/search_menu.xml" value="0.14479166666666668" />
       </map>

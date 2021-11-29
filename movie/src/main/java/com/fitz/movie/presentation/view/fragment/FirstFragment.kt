@@ -1,12 +1,12 @@
 package com.fitz.movie.presentation.view.fragment
 
-import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.fitz.movie.R
 import com.fitz.movie.databinding.FragmentFirstBinding
 import com.fitz.movie.presentation.RefreshHandler
@@ -20,7 +20,7 @@ import javax.inject.Inject
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 @AndroidEntryPoint
-class FirstFragment : Fragment(), RefreshHandler {
+class FirstFragment : Fragment(), RefreshHandler, DialogInterface.OnClickListener {
 
     private val viewModel: FirstFragmentViewModel by viewModels()
 
@@ -52,7 +52,6 @@ class FirstFragment : Fragment(), RefreshHandler {
             }
         }
 
-//        val moviesListAdapter = MoviesListAdapter(mutableListOf(), findNavController(), viewModel)
         binding.moviesList.adapter = moviesListAdapter
 
         viewModel.moviesListLiveData.observe(viewLifecycleOwner) {
@@ -94,10 +93,13 @@ class FirstFragment : Fragment(), RefreshHandler {
         val searchMenuItem = menu.findItem(R.id.search)
         val searchView: SearchView = searchMenuItem.actionView as SearchView
 
-        searchView.onActionViewExpanded()
-        searchView.isIconified = false
-        searchView.clearFocus()
-        searchView.setQuery(viewModel.searchString, false)
+        // persist search string through configuration changes
+        if(viewModel.searchString.isNotBlank()) {
+            searchView.onActionViewExpanded()
+            searchView.isIconified = false
+            searchView.clearFocus()
+            searchView.setQuery(viewModel.searchString, false)
+        }
 
         searchView.setOnQueryTextListener(
             object : SearchView.OnQueryTextListener {
@@ -112,6 +114,17 @@ class FirstFragment : Fragment(), RefreshHandler {
                 }
             }
         )
+
+        val filter = menu.findItem(R.id.filter)
+        filter.setOnMenuItemClickListener {
+            AlertDialog.Builder(requireContext())
+                .setPositiveButton(requireContext().getString(viewModel.getPositiveButton()), this)
+                .setNegativeButton(viewModel.getNegativeButton(), this)
+                .setTitle(requireActivity().getString(viewModel.getDialogTitle()))
+                .create()
+                .show()
+            true
+        }
     }
 
     override fun requestMoreData() {
@@ -121,5 +134,14 @@ class FirstFragment : Fragment(), RefreshHandler {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onClick(dialogIntergace: DialogInterface, item: Int) {
+        dialogIntergace.cancel()
+        if(item == AlertDialog.BUTTON_POSITIVE) {
+            viewModel.getSavedMovies()
+        } else if(item == AlertDialog.BUTTON_NEGATIVE) {
+            viewModel.clearAllFilters()
+        }
     }
 }

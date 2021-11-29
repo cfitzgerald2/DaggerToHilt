@@ -179,7 +179,7 @@ class MovieRepository @Inject constructor(
         }
     }
 
-    private suspend fun getMoviesFromDatabase(): MovieResult {
+    suspend fun getMoviesFromDatabase(): MovieResult {
         val list = try {
             movieDatabaseDto.mapFromDomain(movieDao.getMovies())
         } catch(e: IllegalArgumentException) {

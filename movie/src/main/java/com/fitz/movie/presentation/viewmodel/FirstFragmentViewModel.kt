@@ -1,13 +1,13 @@
 package com.fitz.movie.presentation.viewmodel
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fitz.movie.presentation.RefreshHandler
+import com.fitz.movie.R
 import com.fitz.movie.usecase.databridge.DataBridge
-import com.fitz.movie.usecase.model.MovieResult
-import com.fitz.movie.usecase.model.MovieViewItem
+import com.fitz.movie.usecase.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import javax.inject.Inject
@@ -25,6 +25,7 @@ class FirstFragmentViewModel @Inject constructor(
     @Volatile
     var page = 1
     private val throttleDelay = 2000L
+    private var disableRemoteSearch: Boolean = false
 
     init {
         requestMoreData()
@@ -80,6 +81,19 @@ class FirstFragmentViewModel @Inject constructor(
         }
     }
 
+    fun clearAllFilters() {
+        disableRemoteSearch = false
+        page = 1
+        requestMoreData()
+    }
+
+    fun getSavedMovies() {
+        disableRemoteSearch = true
+        backgroundDispatcher.launch {
+            _moviesListLiveData.postValue(dataBridge.filterData(listOf(LocalSourceFilter())) as MovieResult)
+        }
+    }
+
     fun requestMoreData() {
         backgroundDispatcher.launch {
             if(searchString.isNotBlank()) {
@@ -90,11 +104,51 @@ class FirstFragmentViewModel @Inject constructor(
         }
     }
 
+    @StringRes
+    fun getDialogTitle(): Int {
+        return if(disableRemoteSearch) {
+            R.string.clear_filter_title
+        } else {
+            R.string.filter_title
+        }
+    }
+
+    @StringRes
+    fun getPositiveButton(): Int {
+        return if(disableRemoteSearch) {
+            R.string.clear_filter_positive_button
+        } else {
+            R.string.filter_positive_button
+        }
+    }
+
+    @StringRes
+    fun getNegativeButton(): Int {
+        return if(disableRemoteSearch) {
+            R.string.clear_filter_negative_button
+        } else {
+            R.string.filter_negative_button
+        }
+    }
+
     private suspend fun requestMoreDataAsync(page: Int) {
-        _moviesListLiveData.postValue(dataBridge.getData(page = page) as MovieResult)
+        if(!disableRemoteSearch) {
+            _moviesListLiveData.postValue(dataBridge.getData(page = page) as MovieResult)
+        }
     }
 
     private suspend fun searchForDataAsync(page: Int) {
-        _moviesListLiveData.postValue(dataBridge.searchData(searchString = searchString, page = page) as MovieResult)
+        if(!disableRemoteSearch) {
+            _moviesListLiveData.postValue(
+                dataBridge.filterData(
+                    listOf(
+                        SearchFilter(
+                            searchString = searchString,
+                            page = page
+                        )
+                    )
+                ) as MovieResult
+            )
+        }
     }
 }

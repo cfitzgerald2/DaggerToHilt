@@ -7,6 +7,7 @@ import com.fitz.movie.usecase.dto.DatabaseListMapperDto
 import com.fitz.movie.usecase.dto.DatabaseMapperDto
 import com.fitz.movie.usecase.dto.ServiceListMapperDto
 import com.fitz.movie.usecase.dto.ServiceMapperDto
+import com.fitz.movie.usecase.model.SearchFilter
 import io.mockk.coEvery
 import io.mockk.mockkClass
 import io.mockk.unmockkAll
@@ -42,7 +43,7 @@ class MovieDataBridgeTest {
     @Test
     fun searchData() {
         runBlocking {
-            val result = dataBridge.searchData("veno", 2)
+            val result = dataBridge.filterData(listOf(SearchFilter("veno", 2)))
             Assert.assertEquals(20, result.list.size)
         }
     }

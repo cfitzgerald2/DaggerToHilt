@@ -2,40 +2,48 @@ package com.fitz.movie.presentation.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.fitz.movie.usecase.databridge.DataBridge
+import com.fitz.movie.usecase.model.FilterArgument
 import com.fitz.movie.usecase.model.MovieResult
 import com.fitz.movie.usecase.model.MovieViewItem
+import com.fitz.movie.usecase.model.SearchFilter
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
 import org.junit.*
-
 
 class FirstFragmentViewModelTest {
 
     @get:Rule val rule = InstantTaskExecutorRule()
 
-    private lateinit var viewModel: com.fitz.movie.presentation.viewmodel.FirstFragmentViewModel
+    private lateinit var viewModel: FirstFragmentViewModel
     private var searchString = ""
     private var page = 0
 
+    @ExperimentalCoroutinesApi
     @Before
     fun setUp() {
-        val mockkDataBridge = mockkClass(com.fitz.movie.usecase.databridge.DataBridge::class) as com.fitz.movie.usecase.databridge.DataBridge<com.fitz.movie.usecase.model.MovieViewItem>
-        val mockMovieResult = mockkClass(com.fitz.movie.usecase.model.MovieResult::class)
-        coEvery { mockkDataBridge.searchData(any(), any()) } answers {
-            searchString = arg(0)
-            page = arg(1)
+        val mockkDataBridge = mockkClass(DataBridge::class) as DataBridge<MovieViewItem>
+        val mockMovieResult = mockkClass(MovieResult::class)
+        coEvery { mockkDataBridge.filterData(any()) } answers {
+            val searchList: List<FilterArgument> = arg(0)
+            val filter: FilterArgument = searchList.first()
+            if(filter is SearchFilter) {
+                searchString = filter.searchString
+                page = filter.page
+            }
             mockMovieResult
         }
         val dispatcher = TestCoroutineDispatcher()
         Dispatchers.setMain(dispatcher)
-        viewModel = com.fitz.movie.presentation.viewmodel.FirstFragmentViewModel(
+        viewModel = FirstFragmentViewModel(
             mockkDataBridge,
             TestCoroutineScope(dispatcher)
         )
     }
 
+    @ExperimentalCoroutinesApi
     @After
     fun tearDown() {
         Dispatchers.resetMain()
