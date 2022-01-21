@@ -33,7 +33,7 @@ class ServiceImplementationsTest : TestCase() {
     @Test
     fun testSearchMovies_noMoreResults() {
         runBlocking {
-            val response = ServiceImplementations.movieService.searchMovies( "veno", 4)
+            val response = ServiceImplementations.movieService.searchMovies( "veno", 40)
             Assert.assertEquals(200, response.code())
             Assert.assertEquals(true, response.isSuccessful)
             Assert.assertEquals(0, response.body()?.listResults?.size)

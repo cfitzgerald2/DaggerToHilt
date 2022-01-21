@@ -21,8 +21,8 @@ class FirstFragmentViewModelTest {
 
     @Before
     fun setUp() {
-        val mockkDataBridge = mockkClass(com.fitz.movie.usecase.databridge.DataBridge::class) as com.fitz.movie.usecase.databridge.DataBridge<com.fitz.movie.usecase.model.MovieViewItem>
-        val mockMovieResult = mockkClass(com.fitz.movie.usecase.model.MovieResult::class)
+        val mockkDataBridge = mockkClass(DataBridge::class) as DataBridge<MovieViewItem>
+        val mockMovieResult = mockkClass(MovieResult::class)
         coEvery { mockkDataBridge.searchData(any(), any()) } answers {
             searchString = arg(0)
             page = arg(1)
@@ -32,7 +32,7 @@ class FirstFragmentViewModelTest {
         Dispatchers.setMain(dispatcher)
         viewModel = com.fitz.movie.presentation.viewmodel.FirstFragmentViewModel(
             mockkDataBridge,
-            TestCoroutineScope(dispatcher)
+            dispatcher
         )
     }
 
