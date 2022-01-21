@@ -5,7 +5,7 @@ import com.fitz.movie.usecase.databridge.DataBridge
 import com.fitz.movie.usecase.model.MovieResult
 import com.fitz.movie.usecase.model.MovieViewItem
 import io.mockk.*
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
 import org.junit.*
@@ -15,11 +15,13 @@ class FirstFragmentViewModelTest {
 
     @get:Rule val rule = InstantTaskExecutorRule()
 
-    private lateinit var viewModel: com.fitz.movie.presentation.viewmodel.FirstFragmentViewModel
+    private lateinit var viewModel: FirstFragmentViewModel
     private var searchString = ""
     private var page = 0
 
     @Before
+    @Suppress("UNCHECKED_CAST")
+    @ExperimentalCoroutinesApi
     fun setUp() {
         val mockkDataBridge = mockkClass(DataBridge::class) as DataBridge<MovieViewItem>
         val mockMovieResult = mockkClass(MovieResult::class)
@@ -29,8 +31,7 @@ class FirstFragmentViewModelTest {
             mockMovieResult
         }
         val dispatcher = TestCoroutineDispatcher()
-        Dispatchers.setMain(dispatcher)
-        viewModel = com.fitz.movie.presentation.viewmodel.FirstFragmentViewModel(
+        viewModel = FirstFragmentViewModel(
             mockkDataBridge,
             dispatcher
         )
@@ -38,7 +39,6 @@ class FirstFragmentViewModelTest {
 
     @After
     fun tearDown() {
-        Dispatchers.resetMain()
         unmockkAll()
     }
 
@@ -51,7 +51,9 @@ class FirstFragmentViewModelTest {
             Assert.assertEquals(0, page)
             viewModel.searchForData("ven")
             Assert.assertEquals(1, page)
+            Assert.assertEquals(2, viewModel.page)
             viewModel.requestMoreData()
+            Assert.assertEquals(2, page)
             Assert.assertEquals(3, viewModel.page)
         }
 
