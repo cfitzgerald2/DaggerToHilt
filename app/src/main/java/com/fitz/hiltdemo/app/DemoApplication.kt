@@ -1,6 +1,7 @@
 package com.fitz.hiltdemo.app
 
 import android.app.Application
+import android.os.CountDownTimer
 import com.fitz.hiltdemo.BuildConfig
 import com.fitz.movie.usecase.logger.AppLogger
 import com.fitz.movie.usecase.logger.Logger
@@ -15,6 +16,9 @@ class DemoApplication: Application() {
     @AppLogger
     lateinit var logger: Logger
 
+    @Inject
+    lateinit var appTimer: CountDownTimer
+
     override fun onCreate() {
         super.onCreate()
 
@@ -23,5 +27,6 @@ class DemoApplication: Application() {
         }
 
         logger.log("app created")
+        appTimer.start()
     }
 }
