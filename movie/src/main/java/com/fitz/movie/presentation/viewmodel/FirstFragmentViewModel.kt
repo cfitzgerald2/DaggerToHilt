@@ -12,12 +12,12 @@ import kotlinx.coroutines.*
 import javax.inject.Inject
 
 class FirstFragmentViewModel @Inject constructor(
-    private val dataBridge: com.fitz.movie.usecase.databridge.DataBridge<com.fitz.movie.usecase.model.MovieViewItem>,
+    private val dataBridge: DataBridge<MovieViewItem>,
     private val backgroundDispatcher: CoroutineScope
 ): ViewModel(), RefreshHandler {
 
-    private val _moviesListLiveData: MutableLiveData<com.fitz.movie.usecase.model.MovieResult> = MutableLiveData()
-    val moviesListLiveData: LiveData<com.fitz.movie.usecase.model.MovieResult> = _moviesListLiveData
+    private val _moviesListLiveData: MutableLiveData<MovieResult> = MutableLiveData()
+    val moviesListLiveData: LiveData<MovieResult> = _moviesListLiveData
     val scrollToTopLiveData = MutableLiveData<Boolean>()
 
     @Volatile
@@ -89,10 +89,10 @@ class FirstFragmentViewModel @Inject constructor(
     }
 
     private suspend fun requestMoreDataAsync(page: Int) {
-        _moviesListLiveData.postValue(dataBridge.getData(page = page) as com.fitz.movie.usecase.model.MovieResult)
+        _moviesListLiveData.postValue(dataBridge.getData(page = page) as MovieResult)
     }
 
     private suspend fun searchForDataAsync(page: Int) {
-        _moviesListLiveData.postValue(dataBridge.searchData(searchString = searchString, page = page) as com.fitz.movie.usecase.model.MovieResult)
+        _moviesListLiveData.postValue(dataBridge.searchData(searchString = searchString, page = page) as MovieResult)
     }
 }
