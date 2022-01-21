@@ -1,10 +1,7 @@
 package com.fitz.movie.presentation.viewmodel
 
 import androidx.annotation.StringRes
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.fitz.movie.R
 import com.fitz.movie.usecase.databridge.DataBridge
 import com.fitz.movie.usecase.model.*
@@ -20,7 +17,12 @@ class FirstFragmentViewModel @Inject constructor(
 
     private val _moviesListLiveData: MutableLiveData<MovieResult> = MutableLiveData()
     val moviesListLiveData: LiveData<MovieResult> = _moviesListLiveData
-    val scrollToTopLiveData = MutableLiveData<Boolean>()
+    val scrollToTopLiveData = object: MutableLiveData<Boolean>() {
+        override fun observe(owner: LifecycleOwner, observer: Observer<in Boolean>) {
+            this.value = false
+            super.observe(owner, observer)
+        }
+    }
 
     @Volatile
     var page = 1
