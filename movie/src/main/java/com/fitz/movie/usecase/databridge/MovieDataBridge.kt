@@ -1,14 +1,22 @@
 package com.fitz.movie.usecase.databridge
 
+import com.fitz.movie.R
 import com.fitz.movie.repository.MovieRepository
 import com.fitz.movie.usecase.model.*
+import timber.log.Timber
+import java.io.IOException
 import javax.inject.Inject
 
 class MovieDataBridge @Inject constructor(private val repository: MovieRepository):
     DataBridge<MovieViewItem> {
 
     override suspend fun getData(page: Int): MovieResult {
-        return repository.getMovies(page = page)
+        return try {
+            repository.getMovies(page = page)
+        } catch (e: IOException) {
+            Timber.e(e, "error while getting movies")
+            MovieResult(dataState = RepositoryResult.DataOperation.ERROR, list = mutableListOf(), errorMessage = R.string.loading_error_string)
+        }
     }
 
     override suspend fun editEntity(entity: MovieViewItem) {
