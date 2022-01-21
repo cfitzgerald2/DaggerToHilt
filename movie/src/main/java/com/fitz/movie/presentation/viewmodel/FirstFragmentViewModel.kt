@@ -12,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FirstFragmentViewModel @Inject constructor(
     private val dataBridge: DataBridge<MovieViewItem>,
-    private val backgroundDispatcher: CoroutineScope
+    private val backgroundDispatcher: CoroutineDispatcher
 ): ViewModel() {
 
     private val _moviesListLiveData: MutableLiveData<MovieResult> = MutableLiveData()
@@ -40,7 +40,7 @@ class FirstFragmentViewModel @Inject constructor(
         private set(value) {
             if(!blockedByThrottling && field != value) {
                 field = value
-                backgroundDispatcher.launch {
+                viewModelScope.launch(backgroundDispatcher) {
                     throttleSearchAsync()
                 }
             } else {
@@ -63,7 +63,7 @@ class FirstFragmentViewModel @Inject constructor(
         var originalSearchString = searchString
         page = 1
         blockedByThrottling = true
-        viewModelScope.launch {
+        viewModelScope.launch(backgroundDispatcher) {
             // throttle search and wait for current search to return
             awaitAll(
                 async {
@@ -91,13 +91,13 @@ class FirstFragmentViewModel @Inject constructor(
 
     fun getSavedMovies() {
         disableRemoteSearch = true
-        backgroundDispatcher.launch {
+        viewModelScope.launch(backgroundDispatcher) {
             _moviesListLiveData.postValue(dataBridge.filterData(listOf(LocalSourceFilter())) as MovieResult)
         }
     }
 
     fun requestMoreData() {
-        backgroundDispatcher.launch {
+        viewModelScope.launch(backgroundDispatcher) {
             if(searchString.isNotBlank()) {
                 searchForDataAsync(page++)
             } else {

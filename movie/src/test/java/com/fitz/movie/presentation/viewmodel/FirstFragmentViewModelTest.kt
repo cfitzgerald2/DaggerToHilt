@@ -39,7 +39,7 @@ class FirstFragmentViewModelTest {
         Dispatchers.setMain(dispatcher)
         viewModel = FirstFragmentViewModel(
             mockkDataBridge,
-            TestCoroutineScope(dispatcher)
+            dispatcher
         )
     }
 
