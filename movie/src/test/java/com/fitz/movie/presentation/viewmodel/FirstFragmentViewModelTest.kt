@@ -22,6 +22,7 @@ class FirstFragmentViewModelTest {
     private var page = 0
 
     @ExperimentalCoroutinesApi
+    @Suppress("UNCHECKED_CAST")
     @Before
     fun setUp() {
         val mockkDataBridge = mockkClass(DataBridge::class) as DataBridge<MovieViewItem>
@@ -59,7 +60,9 @@ class FirstFragmentViewModelTest {
             Assert.assertEquals(0, page)
             viewModel.searchForData("ven")
             Assert.assertEquals(1, page)
+            Assert.assertEquals(2, viewModel.page)
             viewModel.requestMoreData()
+            Assert.assertEquals(2, page)
             Assert.assertEquals(3, viewModel.page)
         }
 
