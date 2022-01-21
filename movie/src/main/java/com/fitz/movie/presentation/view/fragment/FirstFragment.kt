@@ -12,6 +12,7 @@ import com.fitz.movie.databinding.FragmentFirstBinding
 import com.fitz.movie.presentation.RefreshHandler
 import com.fitz.movie.presentation.view.adapter.MoviesListAdapter
 import com.fitz.movie.presentation.viewmodel.FirstFragmentViewModel
+import com.fitz.movie.usecase.model.RepositoryResult
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -60,26 +61,26 @@ class FirstFragment : Fragment(), RefreshHandler, DialogInterface.OnClickListene
                 moviesListAdapter.items = it.list.toList()
             }
             when (it.dataState) {
-                com.fitz.movie.usecase.model.RepositoryResult.DataOperation.LOADED -> {
+                RepositoryResult.DataOperation.LOADED -> {
                     moviesListAdapter.notifyDataSetChanged()
                 }
-                com.fitz.movie.usecase.model.RepositoryResult.DataOperation.ADDED -> {
+                RepositoryResult.DataOperation.ADDED -> {
                     moviesListAdapter.notifyItemRangeInserted(originalSize, moviesListAdapter.itemCount - originalSize)
                 }
-                com.fitz.movie.usecase.model.RepositoryResult.DataOperation.DELETED-> {
+                RepositoryResult.DataOperation.DELETED-> {
                     moviesListAdapter.notifyItemRemoved(it.editedIndex)
                 }
-                com.fitz.movie.usecase.model.RepositoryResult.DataOperation.EDITED -> {
+                RepositoryResult.DataOperation.EDITED -> {
                     moviesListAdapter.notifyItemChanged(it.editedIndex)
                 }
-                com.fitz.movie.usecase.model.RepositoryResult.DataOperation.SORTED -> {
+                RepositoryResult.DataOperation.SORTED -> {
                     moviesListAdapter.notifyItemRangeChanged(0, moviesListAdapter.itemCount - 1)
                 }
-                com.fitz.movie.usecase.model.RepositoryResult.DataOperation.ERROR -> {
+                RepositoryResult.DataOperation.ERROR -> {
                     Snackbar.make(binding.root, it.errorMessage, Snackbar.LENGTH_LONG).show()
                     it.errorMessage = R.string.loading_error_still_present
                 }
-                com.fitz.movie.usecase.model.RepositoryResult.DataOperation.NO_MORE_DATA -> {
+                RepositoryResult.DataOperation.NO_MORE_DATA -> {
                     Snackbar.make(binding.root, it.errorMessage, Snackbar.LENGTH_LONG).show()
                     it.errorMessage = R.string.no_more_data_error_still_present
                 }

@@ -23,14 +23,14 @@ class MovieDataBridgeTest {
 
     @Before
     fun setUp() {
-        val dao = mockkClass(com.fitz.movie.persistence.dao.MovieDao::class)
+        val dao = mockkClass(MovieDao::class)
         coEvery { dao.searchMovieById(any()) } returns null
-        val repository = com.fitz.movie.repository.MovieRepository(
-            com.fitz.movie.service.ServiceImplementations.movieService,
-            com.fitz.movie.usecase.dto.ServiceListMapperDto(com.fitz.movie.usecase.dto.ServiceMapperDto()),
+        val repository = MovieRepository(
+            ServiceImplementations.movieService,
+            ServiceListMapperDto(ServiceMapperDto()),
             dao,
-            com.fitz.movie.usecase.dto.DatabaseListMapperDto(com.fitz.movie.usecase.dto.DatabaseMapperDto()),
-            com.fitz.movie.usecase.dto.DatabaseMapperDto()
+            DatabaseListMapperDto(DatabaseMapperDto()),
+            DatabaseMapperDto()
         )
         dataBridge = com.fitz.movie.usecase.databridge.MovieDataBridge(repository)
     }

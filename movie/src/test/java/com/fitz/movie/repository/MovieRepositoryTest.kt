@@ -17,18 +17,18 @@ import org.junit.Test
 
 class MovieRepositoryTest {
 
-    private lateinit var repository: com.fitz.movie.repository.MovieRepository
+    private lateinit var repository: MovieRepository
 
     @Before
     fun setUp() {
-        val dao = mockkClass(com.fitz.movie.persistence.dao.MovieDao::class)
+        val dao = mockkClass(MovieDao::class)
         coEvery { dao.searchMovieById(any()) } returns null
-        repository = com.fitz.movie.repository.MovieRepository(
-            com.fitz.movie.service.ServiceImplementations.movieService,
-            com.fitz.movie.usecase.dto.ServiceListMapperDto(com.fitz.movie.usecase.dto.ServiceMapperDto()),
+        repository = MovieRepository(
+            ServiceImplementations.movieService,
+            ServiceListMapperDto(ServiceMapperDto()),
             dao,
-            com.fitz.movie.usecase.dto.DatabaseListMapperDto(com.fitz.movie.usecase.dto.DatabaseMapperDto()),
-            com.fitz.movie.usecase.dto.DatabaseMapperDto()
+            DatabaseListMapperDto(DatabaseMapperDto()),
+            DatabaseMapperDto()
         )
     }
 
