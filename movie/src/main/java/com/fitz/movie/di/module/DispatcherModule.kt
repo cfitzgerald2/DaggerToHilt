@@ -2,14 +2,14 @@ package com.fitz.movie.di.module
 
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
 @Module
 class DispatcherModule {
 
     @Provides
-    fun bindCoroutineDispatcher(): CoroutineScope {
-        return CoroutineScope(Dispatchers.IO)
+    fun bindCoroutineDispatcher(): CoroutineDispatcher {
+        return Dispatchers.IO
     }
 }
