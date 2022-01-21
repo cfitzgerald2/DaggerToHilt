@@ -10,15 +10,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SecondFragmentViewModel @Inject constructor(
-    private val dataBridge: com.fitz.movie.usecase.databridge.DataBridge<com.fitz.movie.usecase.model.MovieViewItem>,
+    private val dataBridge: DataBridge<MovieViewItem>,
     private val backgroundDispatcher: CoroutineScope
 ): ViewModel() {
 
-    fun saveMovie(movieViewItem: com.fitz.movie.usecase.model.MovieViewItem) {
+    fun saveMovie(movieViewItem: MovieViewItem) {
         backgroundDispatcher.launch { saveMovieAsync(movieViewItem) }
     }
 
-    private suspend fun saveMovieAsync(movieViewItem: com.fitz.movie.usecase.model.MovieViewItem) {
+    private suspend fun saveMovieAsync(movieViewItem: MovieViewItem) {
         dataBridge.editEntity(movieViewItem)
     }
 }
