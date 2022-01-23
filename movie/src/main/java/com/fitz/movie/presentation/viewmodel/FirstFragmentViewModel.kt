@@ -1,11 +1,10 @@
 package com.fitz.movie.presentation.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.fitz.movie.presentation.RefreshHandler
+import androidx.annotation.StringRes
+import androidx.lifecycle.*
+import com.fitz.movie.R
 import com.fitz.movie.usecase.databridge.DataBridge
+import com.fitz.movie.usecase.model.*
 import com.fitz.movie.usecase.logger.AppLogger
 import com.fitz.movie.usecase.logger.Logger
 import com.fitz.movie.usecase.model.MovieResult
@@ -17,18 +16,23 @@ import javax.inject.Inject
 @HiltViewModel
 class FirstFragmentViewModel @Inject constructor(
     private val dataBridge: DataBridge<MovieViewItem>,
-    @AppLogger
-    private val logger: Logger,
-    private val backgroundDispatcher: CoroutineScope
+    @AppLogger private val logger: Logger,
+    private val backgroundDispatcher: CoroutineDispatcher
 ): ViewModel() {
 
     private val _moviesListLiveData: MutableLiveData<MovieResult> = MutableLiveData()
     val moviesListLiveData: LiveData<MovieResult> = _moviesListLiveData
-    val scrollToTopLiveData = MutableLiveData<Boolean>()
+    val scrollToTopLiveData = object: MutableLiveData<Boolean>() {
+        override fun observe(owner: LifecycleOwner, observer: Observer<in Boolean>) {
+            this.value = false
+            super.observe(owner, observer)
+        }
+    }
 
     @Volatile
     var page = 1
     private val throttleDelay = 2000L
+    private var disableRemoteSearch: Boolean = false
 
     init {
         requestMoreData()
@@ -42,7 +46,7 @@ class FirstFragmentViewModel @Inject constructor(
         private set(value) {
             if(!blockedByThrottling && field != value) {
                 field = value
-                backgroundDispatcher.launch {
+                viewModelScope.launch(backgroundDispatcher) {
                     throttleSearchAsync()
                 }
             } else {
@@ -65,7 +69,7 @@ class FirstFragmentViewModel @Inject constructor(
         var originalSearchString = searchString
         page = 1
         blockedByThrottling = true
-        viewModelScope.launch {
+        viewModelScope.launch(backgroundDispatcher) {
             // throttle search and wait for current search to return
             awaitAll(
                 async {
@@ -85,8 +89,21 @@ class FirstFragmentViewModel @Inject constructor(
         }
     }
 
+    fun clearAllFilters() {
+        disableRemoteSearch = false
+        page = 1
+        requestMoreData()
+    }
+
+    fun getSavedMovies() {
+        disableRemoteSearch = true
+        viewModelScope.launch(backgroundDispatcher) {
+            _moviesListLiveData.postValue(dataBridge.filterData(listOf(LocalSourceFilter())) as MovieResult)
+        }
+    }
+
     fun requestMoreData() {
-        backgroundDispatcher.launch {
+        viewModelScope.launch(backgroundDispatcher) {
             if(searchString.isNotBlank()) {
                 searchForDataAsync(page++)
             } else {
@@ -95,11 +112,51 @@ class FirstFragmentViewModel @Inject constructor(
         }
     }
 
+    @StringRes
+    fun getDialogTitle(): Int {
+        return if(disableRemoteSearch) {
+            R.string.clear_filter_title
+        } else {
+            R.string.filter_title
+        }
+    }
+
+    @StringRes
+    fun getPositiveButton(): Int {
+        return if(disableRemoteSearch) {
+            R.string.clear_filter_positive_button
+        } else {
+            R.string.filter_positive_button
+        }
+    }
+
+    @StringRes
+    fun getNegativeButton(): Int {
+        return if(disableRemoteSearch) {
+            R.string.clear_filter_negative_button
+        } else {
+            R.string.filter_negative_button
+        }
+    }
+
     private suspend fun requestMoreDataAsync(page: Int) {
-        _moviesListLiveData.postValue(dataBridge.getData(page = page) as MovieResult)
+        if(!disableRemoteSearch) {
+            _moviesListLiveData.postValue(dataBridge.getData(page = page) as MovieResult)
+        }
     }
 
     private suspend fun searchForDataAsync(page: Int) {
-        _moviesListLiveData.postValue(dataBridge.searchData(searchString = searchString, page = page) as MovieResult)
+        if(!disableRemoteSearch) {
+            _moviesListLiveData.postValue(
+                dataBridge.filterData(
+                    listOf(
+                        SearchFilter(
+                            searchString = searchString,
+                            page = page
+                        )
+                    )
+                ) as MovieResult
+            )
+        }
     }
 }

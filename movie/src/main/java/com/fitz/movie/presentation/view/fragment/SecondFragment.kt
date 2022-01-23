@@ -1,5 +1,7 @@
 package com.fitz.movie.presentation.view.fragment
 
+import android.content.Context
+import android.content.res.Configuration
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -60,17 +62,23 @@ class SecondFragment : Fragment() {
 
         (requireActivity() as AppCompatActivity).supportActionBar?.title = movieViewItem.title
 
-        binding.buttonSecond.setOnClickListener {
-            toggleDescriptionVisibility()
+        if(resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            binding.buttonSecond.setOnClickListener {
+                toggleDescriptionVisibility()
+            }
+
+            binding.descriptionTextView.movementMethod = ScrollingMovementMethod()
+            Glide.with(view).load(movieViewItem.imageURL)
+                .centerCrop()
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .error(R.drawable.ic_launcher_foreground)
+                .into(binding.backgroundImageView)
+        } else {
+            Glide.with(view).load(movieViewItem.imageURL)
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .error(R.drawable.ic_launcher_foreground)
+                .into(binding.backgroundImageView)
         }
-
-        binding.descriptionTextView.movementMethod = ScrollingMovementMethod()
-
-        Glide.with(view).load(movieViewItem.imageURL)
-            .centerCrop()
-            .placeholder(R.drawable.ic_launcher_foreground)
-            .error(R.drawable.ic_launcher_foreground)
-            .into(binding.backgroundImageView)
 
         getAnimatedDrawableAndStart(movieViewItem.saved)
 

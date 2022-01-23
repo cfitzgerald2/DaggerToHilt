@@ -1,17 +1,18 @@
 package com.fitz.movie.presentation.view.fragment
 
-import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.fitz.movie.R
 import com.fitz.movie.databinding.FragmentFirstBinding
 import com.fitz.movie.presentation.RefreshHandler
 import com.fitz.movie.presentation.view.adapter.MoviesListAdapter
 import com.fitz.movie.presentation.viewmodel.FirstFragmentViewModel
+import com.fitz.movie.usecase.model.RepositoryResult
 import com.fitz.movie.usecase.logger.ActivityLogger
 import com.fitz.movie.usecase.logger.Logger
 import com.google.android.material.snackbar.Snackbar
@@ -22,7 +23,7 @@ import javax.inject.Inject
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 @AndroidEntryPoint
-class FirstFragment : Fragment(), RefreshHandler {
+class FirstFragment : Fragment(), RefreshHandler, DialogInterface.OnClickListener {
 
     private val viewModel: FirstFragmentViewModel by viewModels()
 
@@ -67,26 +68,26 @@ class FirstFragment : Fragment(), RefreshHandler {
                 moviesListAdapter.items = it.list.toList()
             }
             when (it.dataState) {
-                com.fitz.movie.usecase.model.RepositoryResult.DataOperation.LOADED -> {
+                RepositoryResult.DataOperation.LOADED -> {
                     moviesListAdapter.notifyDataSetChanged()
                 }
-                com.fitz.movie.usecase.model.RepositoryResult.DataOperation.ADDED -> {
+                RepositoryResult.DataOperation.ADDED -> {
                     moviesListAdapter.notifyItemRangeInserted(originalSize, moviesListAdapter.itemCount - originalSize)
                 }
-                com.fitz.movie.usecase.model.RepositoryResult.DataOperation.DELETED-> {
+                RepositoryResult.DataOperation.DELETED-> {
                     moviesListAdapter.notifyItemRemoved(it.editedIndex)
                 }
-                com.fitz.movie.usecase.model.RepositoryResult.DataOperation.EDITED -> {
+                RepositoryResult.DataOperation.EDITED -> {
                     moviesListAdapter.notifyItemChanged(it.editedIndex)
                 }
-                com.fitz.movie.usecase.model.RepositoryResult.DataOperation.SORTED -> {
+                RepositoryResult.DataOperation.SORTED -> {
                     moviesListAdapter.notifyItemRangeChanged(0, moviesListAdapter.itemCount - 1)
                 }
-                com.fitz.movie.usecase.model.RepositoryResult.DataOperation.ERROR -> {
+                RepositoryResult.DataOperation.ERROR -> {
                     Snackbar.make(binding.root, it.errorMessage, Snackbar.LENGTH_LONG).show()
                     it.errorMessage = R.string.loading_error_still_present
                 }
-                com.fitz.movie.usecase.model.RepositoryResult.DataOperation.NO_MORE_DATA -> {
+                RepositoryResult.DataOperation.NO_MORE_DATA -> {
                     Snackbar.make(binding.root, it.errorMessage, Snackbar.LENGTH_LONG).show()
                     it.errorMessage = R.string.no_more_data_error_still_present
                 }
@@ -100,10 +101,13 @@ class FirstFragment : Fragment(), RefreshHandler {
         val searchMenuItem = menu.findItem(R.id.search)
         val searchView: SearchView = searchMenuItem.actionView as SearchView
 
-        searchView.onActionViewExpanded()
-        searchView.isIconified = false
-        searchView.clearFocus()
-        searchView.setQuery(viewModel.searchString, false)
+        // persist search string through configuration changes
+        if(viewModel.searchString.isNotBlank()) {
+            searchView.onActionViewExpanded()
+            searchView.isIconified = false
+            searchView.clearFocus()
+            searchView.setQuery(viewModel.searchString, false)
+        }
 
         searchView.setOnQueryTextListener(
             object : SearchView.OnQueryTextListener {
@@ -118,6 +122,17 @@ class FirstFragment : Fragment(), RefreshHandler {
                 }
             }
         )
+
+        val filter = menu.findItem(R.id.filter)
+        filter.setOnMenuItemClickListener {
+            AlertDialog.Builder(requireContext())
+                .setPositiveButton(requireContext().getString(viewModel.getPositiveButton()), this)
+                .setNegativeButton(viewModel.getNegativeButton(), this)
+                .setTitle(requireActivity().getString(viewModel.getDialogTitle()))
+                .create()
+                .show()
+            true
+        }
     }
 
     override fun requestMoreData() {
@@ -127,5 +142,14 @@ class FirstFragment : Fragment(), RefreshHandler {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onClick(dialogIntergace: DialogInterface, item: Int) {
+        dialogIntergace.cancel()
+        if(item == AlertDialog.BUTTON_POSITIVE) {
+            viewModel.getSavedMovies()
+        } else if(item == AlertDialog.BUTTON_NEGATIVE) {
+            viewModel.clearAllFilters()
+        }
     }
 }

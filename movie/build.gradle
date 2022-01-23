@@ -15,7 +15,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.fitz.movie.HiltRunner"
     }
 
     buildTypes {
@@ -88,4 +88,11 @@ dependencies {
     // UI test dependencies
     androidTestImplementation "androidx.test.ext:junit:$junit_ext_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    androidTestImplementation "androidx.test:rules:$androidX_test_runner_version"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espresso_intents_version"
+    androidTestImplementation("com.schibsted.spain:barista:$barista_version")
+    // Hilt dependency injection for UI tests
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
+    androidTestAnnotationProcessor "com.google.dagger:hilt-android-compiler:$hilt_version"
 }
