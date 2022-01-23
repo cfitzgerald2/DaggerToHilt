@@ -1,6 +1,5 @@
 package com.fitz.movie.presentation.view.fragment
 
-import android.content.Context
 import android.content.res.Configuration
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
