@@ -22,5 +22,6 @@
     <string name="clear_filter_negative_button">Clear</string>
     <string name="filter_positive_button">Filter</string>
     <string name="filter_negative_button">Cancel</string>
+    <string name="description">Description</string>
 
 </resources>
