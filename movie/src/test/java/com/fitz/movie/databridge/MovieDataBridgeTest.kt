@@ -3,6 +3,7 @@ package com.fitz.movie.databridge
 import com.fitz.movie.persistence.dao.MovieDao
 import com.fitz.movie.repository.MovieRepository
 import com.fitz.movie.service.ServiceImplementations
+import com.fitz.movie.usecase.databridge.MovieDataBridge
 import com.fitz.movie.usecase.dto.DatabaseListMapperDto
 import com.fitz.movie.usecase.dto.DatabaseMapperDto
 import com.fitz.movie.usecase.dto.ServiceListMapperDto
@@ -19,7 +20,7 @@ import org.junit.Test
 
 class MovieDataBridgeTest {
 
-    private lateinit var dataBridge: com.fitz.movie.usecase.databridge.MovieDataBridge
+    private lateinit var dataBridge: MovieDataBridge
 
     @Before
     fun setUp() {
@@ -32,7 +33,7 @@ class MovieDataBridgeTest {
             DatabaseListMapperDto(DatabaseMapperDto()),
             DatabaseMapperDto()
         )
-        dataBridge = com.fitz.movie.usecase.databridge.MovieDataBridge(repository)
+        dataBridge = MovieDataBridge(repository)
     }
 
     @After

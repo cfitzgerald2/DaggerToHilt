@@ -7,7 +7,6 @@ import com.fitz.movie.usecase.model.MovieResult
 import com.fitz.movie.usecase.model.MovieViewItem
 import com.fitz.movie.usecase.model.SearchFilter
 import io.mockk.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
@@ -37,17 +36,14 @@ class FirstFragmentViewModelTest {
             mockMovieResult
         }
         val dispatcher = TestCoroutineDispatcher()
-        Dispatchers.setMain(dispatcher)
         viewModel = FirstFragmentViewModel(
             mockkDataBridge,
             dispatcher
         )
     }
 
-    @ExperimentalCoroutinesApi
     @After
     fun tearDown() {
-        Dispatchers.resetMain()
         unmockkAll()
     }
 
