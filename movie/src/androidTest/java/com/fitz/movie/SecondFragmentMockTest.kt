@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 
 @UninstallModules(value = [RepositoryModule::class])
 @HiltAndroidTest
-class ExampleInstrumentedTest {
+class SecondFragmentMockTest {
 
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
@@ -55,6 +55,10 @@ class ExampleInstrumentedTest {
         onView(withText("Read description")).perform(click())
 
         onView(withSubstring("Paul Atreides")).check(matches(isDisplayed()))
+
+        onView(withText("Read description")).perform(click())
+
+        onView(withId(R.id.bookmark_icon)).perform(click())
 
         BaristaSleepInteractions.sleep(TimeUnit.SECONDS.toMillis(5))
     }
