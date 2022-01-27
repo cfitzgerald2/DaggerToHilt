@@ -6,13 +6,13 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.fitz.movie.R
 import com.fitz.movie.databinding.FragmentFirstBinding
 import com.fitz.movie.di.MovieComponentProvider
 import com.fitz.movie.presentation.view.adapter.MoviesListAdapter
 import com.fitz.movie.presentation.viewmodel.FirstFragmentViewModel
-import com.fitz.movie.presentation.viewmodel.ViewModelProviderFactory
 import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
 
@@ -21,7 +21,7 @@ import javax.inject.Inject
  */
 class FirstFragment : Fragment() {
 
-    @Inject lateinit var viewModelFactory: ViewModelProviderFactory
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: FirstFragmentViewModel by viewModels { viewModelFactory }
 
     private var _binding: FragmentFirstBinding? = null

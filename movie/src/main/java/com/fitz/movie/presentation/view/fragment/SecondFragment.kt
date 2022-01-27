@@ -12,12 +12,12 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.fitz.movie.R
 import com.fitz.movie.databinding.FragmentSecondBinding
 import com.fitz.movie.di.MovieComponentProvider
 import com.fitz.movie.presentation.viewmodel.SecondFragmentViewModel
-import com.fitz.movie.presentation.viewmodel.ViewModelProviderFactory
 import com.fitz.movie.usecase.model.MovieViewItem.Companion.SELECTED_MOVIE_ITEM
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
@@ -28,7 +28,7 @@ import javax.inject.Inject
 class SecondFragment : Fragment() {
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProviderFactory
+    lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: SecondFragmentViewModel by viewModels { viewModelFactory }
 
     private var _binding: FragmentSecondBinding? = null
