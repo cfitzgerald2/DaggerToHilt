@@ -49,7 +49,7 @@ class SecondFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        logger.log("${this::class.java.simpleName} view created")
+        logger.log("${this::class.java.simpleName} creating view")
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
         return binding.root
     }
